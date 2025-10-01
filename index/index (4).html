@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Screen - Modern UI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        /* Elementos decorativos de fondo */
+        .background-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+        }
+
+        .bg-circle:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(45deg, #e91e63, #9c27b0);
+            top: -150px;
+            right: -150px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .bg-circle:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(45deg, #9c27b0, #3f51b5);
+            bottom: -100px;
+            left: -100px;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        .phone-container {
+            perspective: 1000px;
+        }
+
+        .phone-screen {
+            width: 350px;
+            height: 700px;
+            background: linear-gradient(135deg, #e91e63 0%, #9c27b0 25%, #2a1810 50%, #1a0826 100%);
+            border-radius: 35px;
+            padding: 25px;
+            position: relative;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            transform: rotateY(0deg);
+            transition: transform 0.3s ease;
+        }
+
+        .phone-screen:hover {
+            transform: rotateY(5deg) rotateX(2deg);
+        }
+
+        /* Header refinado */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 50px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #ff6b9d, #c44569);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 20px;
+            box-shadow: 0 8px 25px rgba(196, 69, 105, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: rotate(45deg);
+            transition: transform 0.6s;
+        }
+
+        .logo:hover::before {
+            transform: rotate(45deg) translate(100%, 100%);
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+        }
+
+        /* Contenido principal */
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* Avatar con efecto glassmorphism */
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #e91e63, #9c27b0);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            position: relative;
+            box-shadow: 
+                0 20px 40px rgba(233, 30, 99, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .profile-avatar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+            border-radius: 50%;
+        }
+
+        .profile-avatar i {
+            font-size: 45px;
+            color: rgba(26, 8, 38, 0.8);
+            z-index: 2;
+            position: relative;
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 60px;
+            color: #ff6b9d;
+            text-shadow: 0 2px 10px rgba(255, 107, 157, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        /* Sección de memoria con glassmorphism */
+        .memory-section {
+            width: 100%;
+            margin-bottom: 60px;
+        }
+
+        .memory-title {
+            color: #9c27b0;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 25px;
+            opacity: 0.8;
+        }
+
+        .memory-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 30px 20px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .memory-stats {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .memory-circle {
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+
+        .memory-circle svg {
+            width: 100px;
+            height: 100px;
+            transform: rotate(-90deg);
+            filter: drop-shadow(0 4px 8px rgba(233, 30, 99, 0.3));
+        }
+
+        .memory-circle .background {
+            fill: none;
+            stroke: rgba(156, 39, 176, 0.2);
+            stroke-width: 6;
+        }
+
+        .memory-circle .progress {
+            fill: none;
+            stroke: url(#gradient);
+            stroke-width: 6;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s ease-in-out;
+        }
+
+        .memory-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Navegación inferior con glassmorphism */
+        .bottom-nav {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(26, 8, 38, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 15px 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #e91e63, #9c27b0);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-icon:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(233, 30, 99, 0.4);
+        }
+
+        .nav-icon:hover::before {
+            left: 100%;
+        }
+
+        /* Animaciones */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .profile-avatar {
+            animation: scaleIn 0.6s ease-out 0.2s both;
+        }
+
+        .profile-name {
+            animation: slideInUp 0.6s ease-out 0.4s both;
+        }
+
+        .memory-container {
+            animation: slideInUp 0.6s ease-out 0.6s both;
+        }
+
+        .bottom-nav {
+            animation: slideInUp 0.6s ease-out 0.8s both;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .phone-screen {
+                width: 320px;
+                height: 650px;
+                padding: 20px;
+            }
+            
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .profile-avatar i {
+                font-size: 35px;
+            }
+            
+            .memory-circle {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .memory-circle svg {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .phone-screen {
+                width: 100%;
+                max-width: 300px;
+                height: 600px;
+                border-radius: 25px;
+                padding: 15px;
+            }
+            
+            .profile-name {
+                font-size: 20px;
+            }
+            
+            .memory-stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+
+        /* Efectos de partículas */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: particleFloat 4s infinite ease-in-out;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% {
+                transform: translateY(0px) translateX(0px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(20px);
+                opacity: 0;
+            }
+        }
+
+        /* Gradientes SVG */
+        .gradients {
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-elements">
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
+    </div>
+
+    <div class="phone-container">
+        <div class="phone-screen">
+            <!-- Gradientes SVG para los círculos -->
+            <svg class="gradients">
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#e91e63;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#9c27b0;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+            </svg>
+
+            <!-- Partículas animadas -->
+            <div class="particles" id="particles"></div>
+
+            <!-- Header -->
+            <div class="header">
+                <div class="logo">C</div>
+                <div class="status-bar">
+                    <i class="fas fa-signal"></i>
+                    <i class="fas fa-wifi"></i>
+                    <i class="fas fa-battery-three-quarters"></i>
+                </div>
+            </div>
+
+            <!-- Contenido principal -->
+            <div class="content">
+                <!-- Avatar del perfil -->
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+
+                <!-- Nombre del perfil -->
+                <div class="profile-name">YOUR NAME</div>
+
+                <!-- Sección de memoria -->
+                <div class="memory-section">
+                    <div class="memory-title">Memory</div>
+                    <div class="memory-container">
+                        <div class="memory-stats">
+                            <!-- Círculo de progreso 75% -->
+                            <div class="memory-circle">
+                                <svg>
+                                    <circle class="background" cx="50" cy="50" r="40"></circle>
+                                    <circle class="progress" cx="50" cy="50" r="40" 
+                                            stroke-dasharray="251" stroke-dashoffset="62.75" id="circle1"></circle>
+                                </svg>
+                                <div class="memory-text">75%</div>
+                            </div>
+
+                            <!-- Círculo de progreso 85% -->
+                            <div class="memory-circle">
+                                <svg>
+                                    <circle class="background" cx="50" cy="50" r="40"></circle>
+                                    <circle class="progress" cx="50" cy="50" r="40" 
+                                            stroke-dasharray="251" stroke-dashoffset="37.65" id="circle2"></circle>
+                                </svg>
+                                <div class="memory-text">85%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navegación inferior -->
+            <div class="bottom-nav">
+                <div class="nav-icon" id="homeBtn">
+                    <i class="fas fa-home"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inicialización cuando el DOM está listo
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCircleProgress();
+            createParticles();
+            addInteractionEffects();
+            setupResponsiveFeatures();
+        });
+
+        // Función para inicializar círculos de progreso
+        function initializeCircleProgress() {
+            const circle1 = document.getElementById('circle1');
+            const circle2 = document.getElementById('circle2');
+            
+            const radius = 40;
+            const circumference = 2 * Math.PI * radius;
+            
+            // Configurar el círculo del 75%
+            const offset1 = circumference - (75 / 100) * circumference;
+            circle1.style.strokeDasharray = circumference;
+            circle1.style.strokeDashoffset = circumference;
+            
+            // Configurar el círculo del 85%
+            const offset2 = circumference - (85 / 100) * circumference;
+            circle2.style.strokeDasharray = circumference;
+            circle2.style.strokeDashoffset = circumference;
+            
+            // Animación con delay
+            setTimeout(() => {
+                circle1.style.strokeDashoffset = offset1;
+                circle2.style.strokeDashoffset = offset2;
+            }, 1000);
+        }
+
+        // Crear partículas animadas
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Posición aleatoria
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 4 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Efectos de interacción
+        function addInteractionEffects() {
+            const phoneScreen = document.querySelector('.phone-screen');
+            const homeBtn = document.getElementById('homeBtn');
+            const avatar = document.querySelector('.profile-avatar');
+            
+            // Efecto de inclinación en hover
+            phoneScreen.addEventListener('mousemove', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 20;
+                const rotateY = (centerX - x) / 20;
+                
+                this.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            
+            phoneScreen.addEventListener('mouseleave', function() {
+                this.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            });
+            
+            // Efecto de pulso en el botón home
+            homeBtn.addEventListener('click', function() {
+                this.style.transform = 'translateY(-3px) scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-3px) scale(1.05)';
+                }, 150);
+            });
+            
+            // Efecto de rotación en el avatar
+            avatar.addEventListener('click', function() {
+                this.style.transform = 'scale(1) rotateY(360deg)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1) rotateY(0deg)';
+                }, 600);
+            });
+        }
+
+        // Características responsivas
+        function setupResponsiveFeatures() {
+            const handleResize = () => {
+                const width = window.innerWidth;
+                const phoneScreen = document.querySelector('.phone-screen');
+                
+                if (width <= 480) {
+                    phoneScreen.style.width = '95%';
+                    phoneScreen.style.maxWidth = '300px';
+                } else if (width <= 768) {
+                    phoneScreen.style.width = '320px';
+                } else {
+                    phoneScreen.style.width = '350px';
+                }
+            };
+            
+            window.addEventListener('resize', handleResize);
+            handleResize(); // Llamar inicialmente
+        }
+
+        // Efecto de ondas al hacer clic
+        function createRipple(e) {
+            const button = e.currentTarget;
+            const ripple = document.createElement('span');
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.classList.add('ripple');
+            
+            button.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        }
+
+        // Aplicar efecto ripple a botones
+        document.querySelectorAll('.nav-icon, .profile-avatar').forEach(button => {
+            button.addEventListener('click', createRipple);
+        });
+
+        // Animación de entrada secuencial
+        function animateElements() {
+            const elements = [
+                '.logo',
+                '.profile-avatar',
+                '.profile-name',
+                '.memory-container',
+                '.bottom-nav'
+            ];
+            
+            elements.forEach((selector, index) => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.style.animationDelay = (index * 0.2) + 's';
+                }
+            });
+        }
+
+        // Ejecutar animaciones al cargar
+        animateElements();
+
+        // Performance optimization: Throttle resize events
+        function throttle(func, limit) {
+            let inThrottle;
+            return function() {
+                const args = arguments;
+                const context = this;
+                if (!inThrottle) {
+                    func.apply(context, args);
+                    inThrottle = true;
+                    setTimeout(() => inThrottle = false, limit);
+                }
+            }
+        }
+
+        // Aplicar throttling a eventos de resize
+        window.addEventListener('resize', throttle(setupResponsiveFeatures, 100));
+    </script>
+</body>
+</html>
